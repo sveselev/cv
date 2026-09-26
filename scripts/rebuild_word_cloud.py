@@ -100,10 +100,10 @@ TEMPLATE = r'''<!doctype html>
 body{background:var(--page);color:var(--ink)}.brand{color:var(--brand)}a{color:var(--link)}.metadata,footer{color:var(--muted)}footer{border-color:var(--line)}svg a:focus{outline-color:var(--focus)}
 svg text[fill="#155f68"]{fill:var(--word-1)}svg text[fill="#277b83"]{fill:var(--word-2)}svg text[fill="#183e55"]{fill:var(--word-3)}svg text[fill="#92633b"]{fill:var(--word-4)}svg text[fill="#b85c39"]{fill:var(--word-5)}svg text[fill="#5c7180"]{fill:var(--word-6)}
 svg a:hover text,svg a:focus text{fill:#183e55}a:hover,a:focus-visible{color:#183e55}
-.header-top{display:flex;align-items:center;justify-content:space-between;gap:16px}.theme-switch{display:flex;gap:6px}.theme-switch[hidden]{display:none}.theme-switch button{font:16px/1 Arial,sans-serif;width:32px;height:32px;padding:0;border:1px solid var(--line);border-radius:8px;background:var(--page);color:var(--ink);cursor:pointer}.theme-switch button:hover{background:#eae5da}:root[data-theme="dark"] .theme-switch button:hover{background:#253641}.theme-switch button:focus-visible{outline:2px solid var(--focus);outline-offset:3px}
+.header-top{display:flex;align-items:center;justify-content:space-between;gap:16px}.theme-switch{display:flex;gap:6px;flex-shrink:0}.theme-switch[hidden]{display:none}.theme-switch button{font:18px/1 Arial,sans-serif;width:36px;height:36px;padding:0;border:1px solid var(--line);border-radius:8px;background:var(--page);color:var(--ink);cursor:pointer}.theme-switch button:hover{background:#eae5da}:root[data-theme="dark"] .theme-switch button:hover{background:#253641}.theme-switch button:focus-visible{outline:2px solid var(--focus);outline-offset:3px}
 @media print{.theme-switch{display:none}:root[data-theme]{color-scheme:light;--page:#f7f4ed;--ink:#183e55;--muted:#526570;--brand:#92633b;--line:#d9d1c4;--link:#155f68;--word-1:#155f68;--word-2:#277b83;--word-3:#183e55;--word-4:#92633b;--word-5:#b85c39;--word-6:#5c7180}}
 </style></head><body><main>
-<header><div class="header-top"><div class="brand">CHORDSVAULT</div><div class="theme-switch" hidden><button type="button" aria-label="Switch to dark theme" title="Switch to dark theme">🌙</button></div></div><h1>Songs by artist</h1>
+<header><div class="brand">CHORDSVAULT</div><div class="header-top"><h1>Songs by artist</h1><div class="theme-switch" hidden><button type="button" aria-label="Switch to dark theme" title="Switch to dark theme">🌙</button></div></div>
 <p>__COUNT__ catalogue entries · Larger names indicate more songs.</p>
 <p>Click an artist to open their songs. Hover or focus on a name for its song count.</p>
 <p class="metadata">Updated __DATE__ · <a href="https://www.chordsvault.com/ru/artists" target="_blank" rel="noopener noreferrer">Source catalogue ↗</a></p></header>
@@ -180,6 +180,12 @@ def cloud_layout(rows, font_path=None):
                 x = round(width/2+(random()-.5)*(width-120-word['w'])*spread-word['w']/2)
                 y = round(height/2+(random()-.5)*(height-80-word['h'])*spread-word['h']/2)
                 if x < 40 or y < 30 or x+word['w'] > width-40 or y+word['h'] > height-30:
+                    continue
+                # Keep the entire label inside an ellipse, leaving corners
+                # clear and directing smaller names toward the curved edges.
+                dx = max(abs(x-width/2), abs(x+word['w']-width/2))
+                dy = max(abs(y-height/2), abs(y+word['h']-height/2))
+                if (dx/(width/2-40))**2 + (dy/(height/2-30))**2 > 1:
                     continue
                 keys = [(gx, gy) for gx in range(x//96, (x+word['w'])//96+1)
                         for gy in range(y//96, (y+word['h'])//96+1)]

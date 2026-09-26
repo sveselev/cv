@@ -49,6 +49,7 @@ its default HTML output always goes in the parent of the `scripts` folder.
   file. The cloud is visible without JavaScript, including in Finder Quick Look.
   Every artist also appears in an accessible HTML list.
 - Expands the cloud canvas if needed to fit all artists. The layout is fixed at generation time; counts and links are preserved.
+- Keeps artist labels inside an oval boundary, leaving the corners clear.
 - Includes the retrieval time in UTC. Reopening the page does not contact the API.
 - Checks for missing pages, duplicate artist identifiers and changing catalogue totals.
   A failed download leaves the existing HTML untouched. Retry if the catalogue changed.
