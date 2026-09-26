@@ -66,17 +66,56 @@ TEMPLATE = r'''<!doctype html>
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>ChordsVault · Songs by contributor</title>
 <meta name="description" content="ChordsVault contributors sized by song count, with links to their songs.">
+<script>
+(() => {
+  let theme;
+  try { theme = localStorage.getItem('chordsvault-cloud-theme'); } catch (_) {}
+  if (theme !== 'light' && theme !== 'dark') theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  document.documentElement.dataset.theme = theme;
+})();
+</script>
 <style>
 :root{color-scheme:light}*{box-sizing:border-box}body{margin:0;background:#f7f4ed;color:#183e55;font:16px/1.5 Arial,sans-serif}main{max-width:1800px;margin:auto}header{padding:28px 3% 8px}.brand{color:#92633b;font-weight:bold;letter-spacing:.08em;font-size:14px}h1{font-size:clamp(32px,4vw,48px);margin:4px 0 8px;line-height:1.1}p{margin:6px 0}a{color:#155f68;text-underline-offset:3px}.metadata,footer{color:#526570;font-size:14px}.cloud{overflow:auto;padding:4px 0}.cloud svg{display:block;width:100%;min-width:1300px;height:auto}svg a{cursor:pointer}svg a,svg a:hover text,svg a:focus text{text-decoration:none}.hover-highlight{fill:transparent}svg a:hover .hover-highlight,svg a:focus .hover-highlight{fill:#ffe680}a:hover,a:focus-visible{text-decoration:none;background-color:#ffe680}svg a:focus{outline:2px solid #a43b23;outline-offset:3px}footer{padding:12px 3% 24px;border-top:1px solid #d9d1c4}.fallback{padding:0 3% 24px}.fallback li{padding:4px 0}#status{padding:12px 3%}.cloud:empty{display:none}@media print{header,footer{break-inside:avoid}.cloud{overflow:visible}.cloud svg{min-width:0}}
-main{max-width:1100px}.cloud svg{width:auto;min-width:0;max-width:none;margin:auto}@media print{.cloud svg{width:100%;min-width:0}}</style></head><body><main>
-<header><div class="brand">CHORDSVAULT</div><h1>Songs by contributor</h1>
+main{max-width:1100px}.cloud svg{width:auto;min-width:0;max-width:none;margin:auto}@media print{.cloud svg{width:100%;min-width:0}}
+:root{--page:#f7f4ed;--ink:#183e55;--muted:#526570;--brand:#92633b;--line:#d9d1c4;--link:#155f68;--focus:#a43b23;--word-1:#155f68;--word-2:#277b83;--word-3:#183e55;--word-4:#92633b;--word-5:#b85c39;--word-6:#5c7180}
+:root[data-theme="dark"]{color-scheme:dark;--page:#17242d;--ink:#e9eef1;--muted:#afbec7;--brand:#dfb88f;--line:#3c505d;--link:#84d4cc;--focus:#ffe680;--word-1:#84d4cc;--word-2:#71bcc9;--word-3:#e0eaf2;--word-4:#dfb88f;--word-5:#efaa8d;--word-6:#a9c0d1}
+body{background:var(--page);color:var(--ink)}.brand{color:var(--brand)}a{color:var(--link)}.metadata,footer{color:var(--muted)}footer{border-color:var(--line)}svg a:focus{outline-color:var(--focus)}
+svg text[fill="#155f68"]{fill:var(--word-1)}svg text[fill="#277b83"]{fill:var(--word-2)}svg text[fill="#183e55"]{fill:var(--word-3)}svg text[fill="#92633b"]{fill:var(--word-4)}svg text[fill="#b85c39"]{fill:var(--word-5)}svg text[fill="#5c7180"]{fill:var(--word-6)}
+svg a:hover text,svg a:focus text{fill:#183e55}a:hover,a:focus-visible{color:#183e55}
+.header-top{display:flex;align-items:center;justify-content:space-between;gap:16px}.theme-switch{display:flex;gap:6px}.theme-switch[hidden]{display:none}.theme-switch button{font:16px/1 Arial,sans-serif;width:32px;height:32px;padding:0;border:1px solid var(--line);border-radius:8px;background:var(--page);color:var(--ink);cursor:pointer}.theme-switch button:hover{background:#eae5da}:root[data-theme="dark"] .theme-switch button:hover{background:#253641}.theme-switch button:focus-visible{outline:2px solid var(--focus);outline-offset:3px}
+@media print{.theme-switch{display:none}:root[data-theme]{color-scheme:light;--page:#f7f4ed;--ink:#183e55;--muted:#526570;--brand:#92633b;--line:#d9d1c4;--link:#155f68;--word-1:#155f68;--word-2:#277b83;--word-3:#183e55;--word-4:#92633b;--word-5:#b85c39;--word-6:#5c7180}}
+</style></head><body><main>
+<header><div class="header-top"><div class="brand">CHORDSVAULT</div><div class="theme-switch" hidden><button type="button" aria-label="Switch to dark theme" title="Switch to dark theme">🌙</button></div></div><h1>Songs by contributor</h1>
 <p>__COUNT__ catalogue entries · Larger names indicate more songs.</p>
 <p>Click a contributor to open their songs. Hover or focus on a name for its song count.</p>
 <p class="metadata">Updated __DATE__ · <a href="https://www.chordsvault.com/en/contributors" target="_blank" rel="noopener noreferrer">Source catalogue ↗</a></p></header>
 <div class="cloud" id="cloud" role="region" aria-label="Contributor word cloud" tabindex="0">__SVG__</div>
 <div class="fallback" id="fallback"><details><summary>Contributor list and song counts</summary><ul>__LIST__</ul></details></div>
 <footer>Font size uses a square-root scale from 12 to 116 px: round(12 + 104 × (√songs − 1) / max(1, √highest count − 1)). Display names and separate contributor accounts are preserved.<br>On smaller screens, scroll across the cloud or use your browser’s zoom. This page is a snapshot; run the rebuild script to refresh it.</footer>
-</main><script type="application/json" id="contributor-data">__DATA__</script></body></html>'''
+</main><script type="application/json" id="contributor-data">__DATA__</script><script>
+(() => {
+  const controls = document.querySelector('.theme-switch');
+  const button = controls.querySelector('button');
+  function apply(theme) {
+    document.documentElement.dataset.theme = theme;
+    const isDark = theme === 'dark';
+    button.textContent = isDark ? '☀️' : '🌙';
+    const label = isDark ? 'Switch to light theme' : 'Switch to dark theme';
+    button.setAttribute('aria-label', label);
+    button.setAttribute('title', label);
+  }
+  apply(document.documentElement.dataset.theme || 'light');
+  controls.hidden = false;
+  button.addEventListener('click', () => {
+    const theme = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+    apply(theme);
+    try { localStorage.setItem('chordsvault-cloud-theme', theme); } catch (_) {}
+  });
+  window.addEventListener('storage', event => {
+    if (event.key === 'chordsvault-cloud-theme' && (event.newValue === 'light' || event.newValue === 'dark')) apply(event.newValue);
+  });
+})();
+</script></body></html>'''
 
 def cloud_layout(rows, font_path=None):
     """Measure and position every contributor before writing the HTML."""

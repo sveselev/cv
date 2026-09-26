@@ -95,6 +95,17 @@ One-song contributors use 12 px, while the highest count uses 116 px (when
 the highest count is at least four). This increases the visual contrast
 between occasional and prolific contributors.
 
+## Light and dark themes
+
+Both clouds include one theme toggle in the header: 🌙 on a light background
+in light mode, and ☀️ on a dark background in dark mode. Clicking it switches
+to the opposite theme. The initial theme follows
+the system appearance unless a choice was previously saved. Your choice is
+saved in browser storage when available; storage restrictions do not prevent
+switching themes. Dark mode uses lighter text colors and retains the yellow
+link highlights. Printing uses the light palette. The clouds remain readable
+without JavaScript; only the theme controls require JavaScript.
+
 ## Hosted page
 
 This script regenerates a local HTML file. It does **not** modify or redeploy the
