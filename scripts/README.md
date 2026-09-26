@@ -18,14 +18,14 @@ use `.venv\Scripts\activate` instead of `source .venv/bin/activate`.
 Open a terminal in this folder and run:
 
 ```sh
-python3 rebuild_word_cloud.py --output ../chordsvault-word-cloud.html
+python3 rebuild_word_cloud.py
 ```
 
 On Windows, use `py -3` in place of `python3`.
 
 The script downloads the current public artist catalogue and replaces
 `chordsvault-word-cloud.html` in the project root with the command above.
-Without `--output`, the default file is written next to the script. Open that file in a browser.
+Without `--output`, the default file is written in the parent of the `scripts` folder. Open that file in a browser.
 Run the same command whenever you want fresh data, then reload the HTML page.
 
 To choose a destination and also save the downloaded counts:
@@ -35,7 +35,7 @@ python3 rebuild_word_cloud.py --output ./updated-cloud.html --data-output ./coun
 ```
 
 Paths containing spaces must be quoted. The script can be run from any folder;
-its default HTML output always goes next to the script.
+its default HTML output always goes in the parent of the `scripts` folder.
 
 ## What it does
 
@@ -58,6 +58,42 @@ The generated cloud works offline and does not require JavaScript. Both the clou
 and the artist list contain normal clickable links. The reduced vertical margins
 are preserved. Use `--font /path/to/font.ttf` to select a font if automatic font
 detection cannot find Arial Bold, DejaVu Sans Bold, or Liberation Sans Bold.
+
+## Contributors word cloud
+
+Using the same Python environment, run from this folder:
+
+```sh
+python3 rebuild_contributors_word_cloud.py --data-output contributor-song-counts.json
+```
+
+This creates `../chordsvault-contributors-cloud.html` by default,
+using the compact layout and the artist cloud’s palette and bold font. It reads the complete public list from
+`https://www.chordsvault.com/api/songs/contributors`, the endpoint used by
+`https://www.chordsvault.com/en/contributors`.
+
+Display names are preserved. Accounts are identified by `userId`, so duplicate
+display names remain separate. Links filter songs by contributor ID. The script
+rejects empty responses, invalid counts, and duplicate IDs before replacing the
+HTML. The endpoint currently returns an unpaginated array; a changed response
+format fails explicitly. Supported options are `--output`, `--data-output`, and
+`--font`. The generated file works offline without JavaScript. Run the command
+again to refresh the counts.
+
+The script generates only the compact layout, with 12–116 px square-root sizing.
+All contributor names and song links are retained.
+Hovered or focused names have a yellow background highlight without an underline.
+The compact canvas uses a 4:3 landscape ratio, expanding both dimensions together
+when needed to fit every name while retaining the font sizes.
+Compact titles use 94% of their measured horizontal text length. Each title
+stays centered in its original placement box, turning the saved width into
+extra horizontal padding without changing the overall cloud dimensions.
+Vertical padding is 5.3 px above and below each compact title (6% more than 5 px).
+The compact font size in pixels is
+`round(12 + 104 * (sqrt(songCount) - 1) / max(1, sqrt(highestCount) - 1))`.
+One-song contributors use 12 px, while the highest count uses 116 px (when
+the highest count is at least four). This increases the visual contrast
+between occasional and prolific contributors.
 
 ## Hosted page
 
